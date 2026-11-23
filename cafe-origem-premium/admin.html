@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Área administrativa demonstrativa do Café Origem Premium.">
+  <title>Painel administrativo | Café Origem Premium</title>
+  <link rel="icon" type="image/png" href="/arquivos/img/favicon-64.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/arquivos/css/style.css">
+  <link rel="stylesheet" href="/arquivos/css/admin.css">
+</head>
+<body class="admin-page">
+  <div class="announcement">Área administrativa · <b>acesso restrito</b></div>
+  <header class="site-header admin-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="Voltar à vitrine Café Origem Premium">
+        <img class="brand-logo" src="/arquivos/img/logo.png" alt="" width="44" height="44">
+        <span><strong>Café Origem</strong><small>PAINEL ADMINISTRATIVO</small></span>
+      </a>
+      <div class="header-actions">
+        <a class="button button-outline button-sm" href="/">← Ver vitrine</a>
+        <form method="post" action="/logout" class="logout-form"><button class="button button-dark button-sm" type="submit">Sair</button></form>
+      </div>
+    </div>
+  </header>
+  <main class="container admin-main">
+    <section class="admin-intro">
+      <p class="eyebrow"><span></span> Gestão de rastreabilidade</p>
+      <h1>Painel <em>administrativo.</em></h1>
+      <p>Acompanhe o estoque por lote, antecipe vencimentos e mantenha o catálogo atualizado.</p>
+      <p class="admin-shortcuts"><a href="#productFormCard">+ Cadastrar café</a><a href="#lotFormCard">+ Cadastrar lote</a><a href="#lotsTitle">Ver lotes (FEFO)</a></p>
+    </section>
+
+    <section class="kpi-grid" id="kpiGrid" aria-label="Indicadores do estoque">
+      <div class="kpi"><small>Cafés ativos</small><strong id="kpiCafes">—</strong></div>
+      <div class="kpi"><small>Lotes cadastrados</small><strong id="kpiLotes">—</strong></div>
+      <div class="kpi"><small>Unidades em estoque</small><strong id="kpiEstoque">—</strong></div>
+      <div class="kpi kpi-warn"><small id="kpiVenceLabel">Vencem em breve</small><strong id="kpiVence">—</strong></div>
+      <div class="kpi kpi-warn"><small>Estoque baixo ou esgotado</small><strong id="kpiBaixo">—</strong></div>
+      <div class="kpi kpi-bad"><small>Lotes vencidos</small><strong id="kpiVencidos">—</strong></div>
+    </section>
+
+    <section class="admin-card admin-card-spaced" aria-labelledby="lotsTitle">
+      <div class="admin-card-heading">
+        <div class="admin-heading-mark" aria-hidden="true">▦</div>
+        <div><p class="eyebrow">ESTOQUE · FEFO</p><h2 id="lotsTitle">Lotes por ordem de vencimento</h2><p>O primeiro da lista é o que deve sair antes (First Expired, First Out). Cada lote tem página pública e QR Code para a embalagem.</p></div>
+      </div>
+      <div id="lotsMessage" class="admin-message" role="status" aria-live="polite" hidden></div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Lote</th><th>Café</th><th>Torra</th><th>Validade</th><th class="num">Estoque</th><th>Situação</th><th>QR Code</th></tr></thead>
+          <tbody id="lotsBody"><tr><td colspan="7" class="table-empty">Carregando…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-card admin-card-spaced" id="productFormCard" aria-labelledby="productFormTitle">
+      <div class="admin-card-heading">
+        <div class="admin-heading-mark" aria-hidden="true">☕</div>
+        <div><p class="eyebrow" id="productFormEyebrow">CATÁLOGO</p><h2 id="productFormTitle">Cadastrar café</h2><p id="productFormHint">Cadastre o café primeiro; depois associe lotes a ele na seção abaixo. Campos com * são obrigatórios.</p></div>
+      </div>
+      <div id="productMessage" class="admin-message" role="status" aria-live="polite" hidden></div>
+      <form id="productForm" novalidate>
+        <div class="admin-form-grid">
+          <label class="admin-field admin-field-wide" for="p_nome">Nome do café *
+            <input id="p_nome" name="nome" type="text" maxlength="150" placeholder="Ex.: Mantiqueira Natural" required>
+          </label>
+          <label class="admin-field admin-field-wide" for="p_descricao">Descrição *
+            <textarea id="p_descricao" name="descricao" rows="3" maxlength="2000" placeholder="Conte a história e as características do café" required></textarea>
+          </label>
+          <label class="admin-field" for="p_origem">Origem *
+            <input id="p_origem" name="origem" type="text" maxlength="180" placeholder="Ex.: Mantiqueira, Minas Gerais" required>
+          </label>
+          <label class="admin-field" for="p_preco">Preço (R$) *
+            <input id="p_preco" name="preco" type="number" min="0.01" step="0.01" placeholder="Ex.: 54.90" required>
+          </label>
+          <label class="admin-field" for="p_peso">Peso da embalagem
+            <input id="p_peso" name="peso" type="text" maxlength="40" placeholder="Ex.: 250 g">
+          </label>
+          <label class="admin-field" for="p_torra">Torra *
+            <select id="p_torra" name="torra" required>
+              <option value="">Selecione a torra</option><option value="clara">Clara</option>
+              <option value="media">Média</option><option value="escura">Escura</option>
+            </select>
+          </label>
+          <fieldset class="admin-field admin-field-wide admin-checks">
+            <legend>Perfil sensorial * <small>(marque um ou mais)</small></legend>
+            <label><input type="checkbox" name="perfil_sensorial" value="chocolate"> Achocolatado</label>
+            <label><input type="checkbox" name="perfil_sensorial" value="frutado"> Frutado</label>
+            <label><input type="checkbox" name="perfil_sensorial" value="floral"> Floral</label>
+          </fieldset>
+          <label class="admin-field admin-field-wide" for="p_notas">Notas sensoriais *
+            <input id="p_notas" name="notas_sensoriais" type="text" maxlength="255" placeholder="Separe com ponto e vírgula. Ex.: Chocolate; Caramelo; Castanhas" required>
+          </label>
+          <label class="admin-field" for="p_categoria">Categoria
+            <input id="p_categoria" name="categoria" type="text" maxlength="80" placeholder="Ex.: Café especial">
+          </label>
+          <label class="admin-field" for="p_tag">Etiqueta de destaque
+            <input id="p_tag" name="tag" type="text" maxlength="60" placeholder="Ex.: Novidade">
+          </label>
+          <label class="admin-field admin-field-wide" for="p_imagem">Imagem (link)
+            <input id="p_imagem" name="imagem_url" type="text" maxlength="500" placeholder="https://... ou /arquivos/img/cafe.jpg">
+            <small>Opcional. Sem imagem, a vitrine usa uma foto padrão.</small>
+          </label>
+        </div>
+        <div class="admin-form-footer">
+          <p><span aria-hidden="true">ⓘ</span> O café fica ativo e aparece na vitrine assim que for salvo.</p>
+          <button class="button button-dark admin-submit" type="submit" id="productSubmit"><span class="submit-label">Cadastrar café</span><span aria-hidden="true">→</span></button>
+          <button class="button admin-cancel" type="button" id="productCancel" hidden>Cancelar edição</button>
+        </div>
+      </form>
+    </section>
+    <section class="admin-card admin-card-spaced" aria-labelledby="listTitle">
+      <div class="admin-card-heading">
+        <div class="admin-heading-mark" aria-hidden="true">✕</div>
+        <div><p class="eyebrow">CATÁLOGO</p><h2 id="listTitle">Cafés cadastrados</h2><p>Use <strong>Editar</strong> para alterar os dados de um café. Apagar um café remove também todos os lotes ligados a ele e não dá para desfazer.</p></div>
+      </div>
+      <div id="listMessage" class="admin-message" role="status" aria-live="polite" hidden></div>
+      <ul id="productList" class="admin-list"><li>Carregando...</li></ul>
+    </section>
+    <section class="admin-card" id="lotFormCard" aria-labelledby="formTitle">
+      <div class="admin-card-heading">
+        <div class="admin-heading-mark" aria-hidden="true">✳</div>
+        <div><p class="eyebrow">ORIGEM VIVA</p><h2 id="formTitle">Informações do lote</h2><p>Preencha os campos abaixo. O código do lote vira o endereço do QR Code: use letras, números, ponto, hífen ou sublinhado, sem espaços. Campos com * são obrigatórios.</p></div>
+      </div>
+      <div id="formMessage" class="admin-message" role="status" aria-live="polite" hidden></div>
+      <form id="lotForm" novalidate>
+        <div class="admin-form-grid">
+          <label class="admin-field admin-field-wide" for="produto_id">Produto *
+            <select id="produto_id" name="produto_id" required><option value="">Carregando produtos...</option></select>
+            <small>Selecione um produto ativo do catálogo.</small>
+          </label>
+          <label class="admin-field" for="codigo_lote">Código do lote *
+            <input id="codigo_lote" name="codigo_lote" type="text" maxlength="80" placeholder="Ex.: OV-MAN-2026-002" pattern="[A-Za-z0-9._\-]+" title="Use letras, números, ponto, hífen ou sublinhado, sem espaços" required>
+          </label>
+          <label class="admin-field" for="produtor">Produtor *
+            <input id="produtor" name="produtor" type="text" maxlength="150" placeholder="Nome do produtor" required>
+          </label>
+          <label class="admin-field" for="fazenda">Fazenda *
+            <input id="fazenda" name="fazenda" type="text" maxlength="150" placeholder="Nome da fazenda" required>
+          </label>
+          <label class="admin-field" for="origem">Origem *
+            <input id="origem" name="origem" type="text" maxlength="180" placeholder="Ex.: Mantiqueira, Minas Gerais" required>
+          </label>
+          <label class="admin-field" for="processo">Processo *
+            <select id="processo" name="processo" required>
+              <option value="">Selecione o processo</option><option value="Natural">Natural</option>
+              <option value="Cereja descascado">Cereja descascado</option><option value="Lavado">Lavado</option>
+              <option value="Honey">Honey</option><option value="Fermentado">Fermentado</option><option value="Outro">Outro</option>
+            </select>
+          </label>
+          <label class="admin-field" for="data_torra">Data da torra *
+            <input id="data_torra" name="data_torra" type="date" required>
+          </label>
+          <label class="admin-field" for="data_validade">Data de validade *
+            <input id="data_validade" name="data_validade" type="date" required>
+          </label>
+          <label class="admin-field" for="pontuacao">Pontuação (0 a 100) *
+            <input id="pontuacao" name="pontuacao" type="number" min="0" max="100" step="0.1" placeholder="Ex.: 86.5" required>
+          </label>
+          <label class="admin-field" for="estoque">Estoque (unidades) *
+            <input id="estoque" name="estoque" type="number" min="0" step="1" placeholder="Ex.: 50" required>
+          </label>
+        </div>
+        <div class="admin-form-footer">
+          <p><span aria-hidden="true">ⓘ</span> Confira os dados antes de enviar. O formulário ainda é uma etapa acadêmica em desenvolvimento.</p>
+          <button class="button button-dark admin-submit" type="submit" id="submitButton"><span class="submit-label">Cadastrar lote</span><span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+    </section>
+    <aside class="admin-disclaimer">
+      <strong>Ambiente demonstrativo</strong>
+      <p>Esta tela usa as rotas Flask <code>/api/produtos</code> (POST, PUT, DELETE) e <code>/api/origem-viva</code> (POST), protegidas por login de administrador no servidor.</p>
+    </aside>
+  </main>
+  <footer class="site-footer admin-footer">
+    <div class="container footer-bottom">
+      <span>© <span id="year"></span> Café Origem Premium</span>
+      <span>Área administrativa · Projeto acadêmico</span>
+    </div>
+  </footer>
+  <script src="/arquivos/js/admin.js"></script>
+</body>
+</html>
